@@ -1,0 +1,127 @@
+
+SQL LEETCODE INTERVIEW QUESTIONS FOR DATA ANALYST
+==============================================
+
+1) LeetCode 175 – Combine Two Tables
+----------------------------------
+Question:
+Write a SQL query to combine the Person and Address tables so that each row includes a person's first name, last name, city, and state.
+
+Answer:
+SELECT 
+    p.firstName,
+    p.lastName,
+    a.city,
+    a.state
+FROM Person p
+LEFT JOIN Address a
+ON p.personId = a.personId;
+
+
+2) LeetCode 183 – Customers Who Never Order
+------------------------------------------
+Question:
+Find customers who never placed an order.
+
+Answer:
+SELECT c.name AS Customers
+FROM Customers c
+LEFT JOIN Orders o
+ON c.id = o.customerId
+WHERE o.customerId IS NULL;
+
+
+3) LeetCode 181 – Employees Earning More Than Their Managers
+-----------------------------------------------------------
+Question:
+Find employees who earn more than their managers.
+
+Answer:
+SELECT e.name AS Employee
+FROM Employee e
+JOIN Employee m
+ON e.managerId = m.id
+WHERE e.salary > m.salary;
+
+
+4) LeetCode 182 – Duplicate Emails
+---------------------------------
+Question:
+Find all duplicate email addresses.
+
+Answer:
+SELECT email
+FROM Person
+GROUP BY email
+HAVING COUNT(email) > 1;
+
+
+5) LeetCode 196 – Delete Duplicate Emails
+----------------------------------------
+Question:
+Delete duplicate emails and keep only one unique email (lowest id).
+
+Answer:
+DELETE FROM Person
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM Person
+    GROUP BY email
+);
+
+
+6) LeetCode 176 – Second Highest Salary
+-------------------------------------
+Question:
+Find the second highest salary.
+
+Answer:
+SELECT MAX(salary) AS SecondHighestSalary
+FROM Employee
+WHERE salary < (
+    SELECT MAX(salary)
+    FROM Employee
+);
+
+
+7) LeetCode 178 – Rank Scores
+----------------------------
+Question:
+Rank scores without skipping rank numbers.
+
+Answer:
+SELECT 
+    score,
+    DENSE_RANK() OVER (ORDER BY score DESC) AS rank
+FROM Scores;
+
+
+8) LeetCode 197 – Rising Temperature
+----------------------------------
+Question:
+Find all ids where the temperature is higher than the previous day.
+
+Answer:
+SELECT w1.id
+FROM Weather w1
+JOIN Weather w2
+ON w1.recordDate = DATE_ADD(w2.recordDate, INTERVAL 1 DAY)
+WHERE w1.temperature > w2.temperature;
+
+
+9) LeetCode 595 – Big Countries
+------------------------------
+Question:
+Find countries with area ≥ 3,000,000 OR population ≥ 25,000,000.
+
+Answer:
+SELECT 
+    name,
+    population,
+    area
+FROM World
+WHERE area >= 3000000
+   OR population >= 25000000;
+
+
+END OF FILE
