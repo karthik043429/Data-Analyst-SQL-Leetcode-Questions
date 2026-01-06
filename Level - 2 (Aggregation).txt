@@ -1,0 +1,106 @@
+
+LEVEL 2: SQL LEETCODE – AGGREGATION & BUSINESS LOGIC
+==================================================
+
+--------------------------------------------------
+🧩 LeetCode 176 — Second Highest Salary
+--------------------------------------------------
+
+Problem Statement:
+Write a SQL query to find the second highest distinct salary from the Employee table.
+If it does not exist, return NULL.
+
+SQL Solution:
+SELECT MAX(salary) AS SecondHighestSalary
+FROM Employee
+WHERE salary < (
+    SELECT MAX(salary)
+    FROM Employee
+);
+
+--------------------------------------------------
+🧩 LeetCode 177 — Nth Highest Salary
+--------------------------------------------------
+
+Problem Statement:
+Write a SQL function to return the Nth highest distinct salary.
+If it does not exist, return NULL.
+
+SQL Solution:
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      SELECT salary
+      FROM (
+          SELECT salary,
+                 DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+          FROM Employee
+      ) t
+      WHERE rnk = N
+  );
+END;
+
+--------------------------------------------------
+🧩 LeetCode 178 — Rank Scores
+--------------------------------------------------
+
+Problem Statement:
+Rank scores in descending order using dense ranking.
+
+SQL Solution:
+SELECT 
+    score,
+    DENSE_RANK() OVER (ORDER BY score DESC) AS rank
+FROM Scores;
+
+--------------------------------------------------
+🧩 LeetCode 184 — Department Highest Salary
+--------------------------------------------------
+
+SQL Solution:
+SELECT d.name AS Department, e.name AS Employee, e.salary
+FROM Employee e
+JOIN (
+    SELECT departmentId, MAX(salary) AS max_salary
+    FROM Employee
+    GROUP BY departmentId
+) dept_max
+ON e.departmentId = dept_max.departmentId
+AND e.salary = dept_max.max_salary
+JOIN Department d
+ON e.departmentId = d.id;
+
+--------------------------------------------------
+🧩 LeetCode 511 — Game Play Analysis I
+--------------------------------------------------
+
+SQL Solution:
+SELECT 
+    player_id,
+    MIN(event_date) AS first_login
+FROM Activity
+GROUP BY player_id;
+
+--------------------------------------------------
+🧩 LeetCode 550 — Game Play Analysis IV
+--------------------------------------------------
+
+SQL Solution:
+SELECT 
+    ROUND(
+        COUNT(DISTINCT a.player_id) / 
+        (SELECT COUNT(DISTINCT player_id) FROM Activity),
+        2
+    ) AS fraction
+FROM Activity a
+JOIN (
+    SELECT player_id, MIN(event_date) AS first_login
+    FROM Activity
+    GROUP BY player_id
+) f
+ON a.player_id = f.player_id
+AND a.event_date = DATE_ADD(f.first_login, INTERVAL 1 DAY);
+
+==================================================
+END OF LEVEL 2 SQL LEETCODE QUESTIONS
+==================================================
